@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>RedLine Service</title>
+<meta name="description" content="RedLine Service — performance tuning, calibration, and track prep for cars built to be pushed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0a0a0a;
+    --panel:#131313;
+    --line:#2a2a2a;
+    --off-white:#ededea;
+    --dim:#8a8a86;
+    --red:#ff1e1e;
+    --red-dim:#5c0f0f;
+    --amber:#ff7a1e;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--black);
+    color:var(--off-white);
+    font-family:'IBM Plex Mono', monospace;
+    overflow-x:hidden;
+    cursor:default;
+  }
+
+  h1,h2,h3,.display{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.01em;
+  }
+
+  a{color:inherit;text-decoration:none;}
+
+  ::selection{background:var(--red);color:var(--black);}
+
+  :focus-visible{
+    outline:2px solid var(--red);
+    outline-offset:3px;
+  }
+
+  /* ---------- Loader ---------- */
+  #loader{
+    position:fixed;inset:0;
+    background:var(--black);
+    z-index:999;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    transition:opacity .6s ease, visibility .6s ease;
+  }
+  #loader.hide{opacity:0;visibility:hidden;}
+  #loader .mark{
+    font-family:'Oswald',sans-serif;
+    font-size:clamp(2.5rem,8vw,5rem);
+    font-weight:700;
+    letter-spacing:0.02em;
+    color:var(--off-white);
+    display:flex;
+    align-items:baseline;
+    gap:.4rem;
+  }
+  #loader .mark span{color:var(--red);}
+  #loader .pct{
+    margin-top:1.2rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    color:var(--dim);
+    letter-spacing:.15em;
+  }
+  #loader .pct b{color:var(--red);font-weight:600;}
+  #loader .bar{
+    width:min(280px,60vw);
+    height:2px;
+    background:var(--line);
+    margin-top:1.4rem;
+    position:relative;
+    overflow:hidden;
+  }
+  #loader .bar i{
+    position:absolute;left:0;top:0;bottom:0;
+    width:0%;
+    background:var(--red);
+    transition:width .08s linear;
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:fixed;top:0;left:0;right:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1.4rem clamp(1.2rem,4vw,3rem);
+    background:linear-gradient(to bottom, rgba(10,10,10,.9), transparent);
+  }
+  header .logo{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    letter-spacing:.06em;
+  }
+  header .logo span{color:var(--red);}
+  nav.links{
+    display:flex;
+    gap:clamp(1rem,3vw,2.4rem);
+    font-size:.78rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  nav.links a{
+    position:relative;
+    color:var(--dim);
+    transition:color .25s ease;
+    padding-bottom:2px;
+  }
+  nav.links a:hover, nav.links a:focus-visible{color:var(--off-white);}
+  nav.links a::after{
+    content:"";
+    position:absolute;left:0;bottom:0;
+    width:0;height:1px;
+    background:var(--red);
+    transition:width .25s ease;
+  }
+  nav.links a:hover::after, nav.links a:focus-visible::after{width:100%;}
+  header .cta{
+    font-size:.75rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    border:1px solid var(--red);
+    color:var(--off-white);
+    padding:.55rem 1.1rem;
+    transition:background .25s ease, color .25s ease;
+  }
+  header .cta:hover, header .cta:focus-visible{background:var(--red);color:var(--black);}
+  .menu-toggle{display:none;background:none;border:0;color:var(--off-white);font-size:1.4rem;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:clamp(6rem,10vw,8rem) clamp(1.2rem,4vw,3rem) 4rem;
+    position:relative;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 64px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 64px);
+  }
+  .hero .eyebrow{
+    font-size:.78rem;
+    letter-spacing:.25em;
+    color:var(--red);
+    margin-bottom:1.2rem;
+  }
+  .hero h1{
+    font-size:clamp(2.8rem,9vw,7.5rem);
+    line-height:.94;
+    font-weight:700;
+    max-width:16ch;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:transparent;
+    -webkit-text-stroke:1.5px var(--off-white);
+  }
+  .hero .sub{
+    margin-top:1.8rem;
+    max-width:46ch;
+    color:var(--dim);
+    font-size:.95rem;
+    line-height:1.7;
+  }
+  .hero .actions{
+    margin-top:2.4rem;
+    display:flex;
+    gap:1rem;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:.9rem 1.6rem;
+    border:1px solid var(--line);
+    transition:border-color .25s ease, background .25s ease, color .25s ease;
+  }
+  .btn.primary{background:var(--red);border-color:var(--red);color:var(--black);}
+  .btn.primary:hover, .btn.primary:focus-visible{background:transparent;color:var(--red);}
+  .btn.ghost:hover, .btn.ghost:focus-visible{border-color:var(--off-white);}
+
+  /* tachometer signature */
+  .tach{
+    position:absolute;
+    right:clamp(1rem,5vw,6rem);
+    bottom:clamp(2rem,6vw,4rem);
+    width:clamp(160px,22vw,280px);
+    height:clamp(160px,22vw,280px);
+  }
+  .tach svg{width:100%;height:100%;overflow:visible;}
+  .tach .rpm-label{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-family:'Oswald',sans-serif;
+  }
+  .tach .rpm-num{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;}
+  .tach .rpm-num.limit{color:var(--red);}
+  .tach .rpm-unit{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--dim);margin-top:.2rem;}
+  @media (max-width:780px){ .tach{position:static;margin-top:3rem;} }
+
+  section{padding:clamp(4rem,8vw,7rem) clamp(1.2rem,4vw,3rem);border-top:1px solid var(--line);}
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:2rem;
+    flex-wrap:wrap;
+    margin-bottom:3rem;
+  }
+  .section-head .tag{font-size:.75rem;letter-spacing:.2em;color:var(--red);margin-bottom:.6rem;}
+  .section-head h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:600;max-width:14ch;}
+  .section-head p{max-width:38ch;color:var(--dim);font-size:.88rem;line-height:1.7;}
+
+  /* ---------- Services (spec sheet) ---------- */
+  .spec-list{border-top:1px solid var(--line);}
+  .spec-row{
+    display:grid;
+    grid-template-columns:9rem 1fr 12rem;
+    gap:2rem;
+    align-items:center;
+    padding:1.8rem 0;
+    border-bottom:1px solid var(--line);
+    transition:background .25s ease;
+  }
+  .spec-row:hover{background:rgba(255,30,30,.04);}
+  .spec-row .range{font-size:.78rem;color:var(--dim);letter-spacing:.05em;}
+  .spec-row .range b{color:var(--red);}
+  .spec-row h3{font-size:clamp(1.3rem,2.6vw,1.9rem);font-weight:500;}
+  .spec-row p{color:var(--dim);font-size:.82rem;line-height:1.6;margin-top:.4rem;font-family:'IBM Plex Mono',monospace;text-transform:none;}
+  .spec-row .redzone{
+    justify-self:end;
+    font-size:.72rem;
+    letter-spacing:.1em;
+    color:var(--dim);
+    text-align:right;
+  }
+  .spec-row .redzone b{display:block;color:var(--off-white);font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:600;}
+  @media (max-width:780px){
+    .spec-row{grid-template-columns:1fr;gap:.4rem;}
+    .spec-row .redzone{justify-self:start;text-align:left;margin-top:.6rem;}
+  }
+
+  /* ---------- Manifesto ---------- */
+  .manifesto{background:var(--panel);}
+  .manifesto blockquote{
+    font-family:'Oswald',sans-serif;
+    font-size:clamp(1.6rem,4vw,2.8rem);
+    line-height:1.35;
+    font-weight:500;
+    max-width:22ch;
+    text-transform:none;
+  }
+  .manifesto blockquote .redline{
+    color:transparent;
+    -webkit-text-stroke:1px var(--red);
+  }
+  .manifesto .meta{
+    margin-top:2rem;
+    display:flex;
+    gap:2.5rem;
+    flex-wrap:wrap;
+    font-size:.78rem;
+    color:var(--dim);
+    letter-spacing:.05em;
+  }
+  .manifesto .meta strong{display:block;color:var(--off-white);font-family:'Oswald',sans-serif;font-size:1.4rem;font-weight:600;}
+
+  /* ---------- Work ---------- */
+  .work-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .work-card{
+    background:var(--black);
+    padding:2.2rem 1.6rem;
+    min-height:220px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    position:relative;
+    overflow:hidden;
+  }
+  .work-card:hover .glow{opacity:1;}
+  .work-card .glow{
+    position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 20%, rgba(255,30,30,.16), transparent 60%);
+    opacity:0;
+    transition:opacity .35s ease;
+  }
+  .work-card .id{font-size:.72rem;color:var(--dim);letter-spacing:.1em;}
+  .work-card h3{font-size:1.3rem;font-weight:500;position:relative;z-index:1;}
+  .work-card .stat{font-size:.75rem;color:var(--red);letter-spacing:.05em;position:relative;z-index:1;}
+  @media (max-width:900px){ .work-grid{grid-template-columns:1fr;} }
+
+  /* ---------- Contact ---------- */
+  .contact{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:3rem;
+  }
+  .contact h2{font-size:clamp(2.2rem,6vw,4rem);font-weight:700;max-width:12ch;line-height:1;}
+  .contact .addr{margin-top:2rem;color:var(--dim);font-size:.85rem;line-height:2;}
+  .contact .addr b{color:var(--off-white);}
+  .contact form{display:flex;flex-direction:column;gap:1.1rem;}
+  .contact input, .contact textarea{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--off-white);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.9rem;
+    padding:.8rem .2rem;
+    transition:border-color .25s ease;
+  }
+  .contact input::placeholder, .contact textarea::placeholder{color:var(--dim);}
+  .contact input:focus, .contact textarea:focus{border-color:var(--red);outline:none;}
+  .contact textarea{resize:vertical;min-height:90px;}
+  @media (max-width:780px){ .contact{grid-template-columns:1fr;} }
+
+  footer{
+    padding:2rem clamp(1.2rem,4vw,3rem);
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:1rem;
+    font-size:.72rem;
+    color:var(--dim);
+    letter-spacing:.05em;
+  }
+  footer .socials{display:flex;gap:1.4rem;}
+  footer .socials a{color:var(--dim);transition:color .25s ease;}
+  footer .socials a:hover, footer .socials a:focus-visible{color:var(--red);}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none !important;animation:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="loader" aria-hidden="true">
+  <div class="mark">REDLINE<span>.</span></div>
+  <div class="pct">CALIBRATING SYSTEMS — <b id="pctNum">0</b>%</div>
+  <div class="bar"><i id="pctBar"></i></div>
+</div>
+
+<header>
+  <div class="logo">REDLINE<span>.</span>SERVICE</div>
+  <nav class="links">
+    <a href="#services">Services</a>
+    <a href="#work">Work</a>
+    <a href="#manifesto">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a class="cta" href="#contact">Book a slot</a>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">REDLINESERVICE.NETLIFY.APP</div>
+    <h1>WE TUNE<br>MACHINES <em>TO</em><br>THEIR LIMIT.</h1>
+    <p class="sub">RedLine Service is a performance workshop for cars built to be pushed — tuning, calibration, and track prep handled by people who read a dyno chart like a heartbeat.</p>
+    <div class="actions">
+      <a class="btn primary" href="#contact">Book a slot</a>
+      <a class="btn ghost" href="#services">See services</a>
+    </div>
+
+    <div class="tach" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#2a2a2a" stroke-width="10"/>
+        <path id="tachRed" d="M 100 12 A 88 88 0 0 1 172 145" fill="none" stroke="#5c0f0f" stroke-width="10" stroke-linecap="round"/>
+        <circle id="tachProgress" cx="100" cy="100" r="88" fill="none" stroke="#ff1e1e" stroke-width="10"
+          stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553"
+          transform="rotate(-215 100 100)"/>
+      </svg>
+      <div class="rpm-label">
+        <div class="rpm-num limit" id="rpmNum">0</div>
+        <div class="rpm-unit">RPM &times; 100 — REDLINE 72</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="section-head">
+      <div>
+        <div class="tag">SERVICE SHEET</div>
+        <h2>Built for the redline, not the commute.</h2>
+      </div>
+      <p>Four disciplines, one shop. Every job is logged with before/after data — no guesswork, no upsells.</p>
+    </div>
+
+    <div class="spec-list">
+      <div class="spec-row">
+        <div class="range">IDLE&nbsp;&mdash;&nbsp;<b>3,000</b></div>
+        <div>
+          <h3>Diagnostics &amp; Calibration</h3>
+          <p>Full ECU read-out, sensor health check, and baseline mapping before anything gets touched.</p>
+        </div>
+        <div class="redzone">FROM<b>$120</b></div>
+      </div>
+      <div class="spec-row">
+        <div class="range">3,000&nbsp;&mdash;&nbsp;<b>5,500</b></div>
+        <div>
+          <h3>Performance Tuning</h3>
+          <p>Dyno-verified fuel and timing maps built around how you actually drive the car.</p>
+        </div>
+        <div class="redzone">FROM<b>$480</b></div>
+      </div>
+      <div class="spec-row">
+        <div class="range">5,500&nbsp;&mdash;&nbsp;<b>6,800</b></div>
+        <div>
+          <h3>Track Prep</h3>
+          <p>Brake, cooling, and suspension setup for cars headed to the paddock, not the parking lot.</p>
+        </div>
+        <div class="redzone">FROM<b>$650</b></div>
+      </div>
+      <div class="spec-row">
+        <div class="range">6,800&nbsp;&mdash;&nbsp;<b>7,200</b></div>
+        <div>
+          <h3>Redline Detailing</h3>
+          <p>Correction and ceramic work that survives the abuse a tuned car puts it through.</p>
+        </div>
+        <div class="redzone">FROM<b>$300</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" class="work-grid-wrap">
+    <div class="section-head">
+      <div>
+        <div class="tag">RECENT BUILDS</div>
+        <h2>On the lift this season.</h2>
+      </div>
+      <p>A sample of what's rolled through the shop recently.</p>
+    </div>
+    <div class="work-grid">
+      <div class="work-card">
+        <div class="glow"></div>
+        <span class="id">BUILD / 4B1</span>
+        <h3>Track-spec E46 M3</h3>
+        <span class="stat">+38 WHP &middot; -42kg</span>
+      </div>
+      <div class="work-card">
+        <div class="glow"></div>
+        <span class="id">BUILD / 7C2</span>
+        <h3>Stage 2 GR Yaris</h3>
+        <span class="stat">Full remap &middot; big-brake kit</span>
+      </div>
+      <div class="work-card">
+        <div class="glow"></div>
+        <span class="id">BUILD / 9F0</span>
+        <h3>Time-attack Civic Type R</h3>
+        <span class="stat">Aero package &middot; roll cage</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="manifesto" class="manifesto">
+    <blockquote>Most shops tell you when to stop. <span class="redline">We tell you where the line actually is.</span></blockquote>
+    <div class="meta">
+      <div><strong>11</strong>years on the floor</div>
+      <div><strong>640+</strong>cars tuned</div>
+      <div><strong>0</strong>shortcuts taken</div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="contact">
+      <div>
+        <h2>Ready to find your limit?</h2>
+        <div class="addr">
+          <div><b>Shop hours</b> — Tue&ndash;Sat, 9:00&ndash;18:00</div>
+          <div><b>Email</b> — book@redlineservice.netlify.app</div>
+          <div><b>Site</b> — redlineservice.netlify.app</div>
+        </div>
+      </div>
+      <form onsubmit="event.preventDefault(); this.reset(); alert('Thanks — we\'ll be in touch.');">
+        <input type="text" placeholder="Name" required>
+        <input type="text" placeholder="Car (make / model / year)" required>
+        <textarea placeholder="What are we working on?" required></textarea>
+        <button class="btn primary" type="submit" style="align-self:flex-start;">Send request</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>&copy; 2026 RedLine Service. All rights reserved.</div>
+  <div class="socials">
+    <a href="#">Instagram</a>
+    <a href="#">Youtube</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+  // Loader sequence
+  (function(){
+    var pctNum = document.getElementById('pctNum');
+    var pctBar = document.getElementById('pctBar');
+    var loader = document.getElementById('loader');
+    var val = 0;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function finish(){
+      loader.classList.add('hide');
+      setTimeout(function(){ loader.style.display='none'; }, 650);
+    }
+
+    if(reduce){ finish(); return; }
+
+    var t = setInterval(function(){
+      val += Math.floor(Math.random()*9)+3;
+      if(val >= 100){ val = 100; clearInterval(t); setTimeout(finish, 250); }
+      pctNum.textContent = val;
+      pctBar.style.width = val + '%';
+    }, 90);
+  })();
+
+  // Tachometer needle-sweep on load/scroll into view
+  (function(){
+    var circle = document.getElementById('tachProgress');
+    var rpmNum = document.getElementById('rpmNum');
+    var circumference = 553;
+    var target = 72; // out of 90 scale -> redline
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function setValue(v){
+      var frac = v/90;
+      circle.style.strokeDashoffset = circumference - (frac*circumference*0.86);
+      rpmNum.textContent = v;
+      circle.style.stroke = v >= 68 ? '#ff1e1e' : '#ededea';
+    }
+
+    if(reduce){ setValue(target); return; }
+
+    var animated = false;
+    function sweep(){
+      if(animated) return;
+      animated = true;
+      var v = 0;
+      var iv = setInterval(function(){
+        v += 2;
+        if(v >= target){ v = target; clearInterval(iv); }
+        setValue(v);
+      }, 18);
+    }
+
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting) sweep(); });
+    }, {threshold:.4});
+    obs.observe(document.querySelector('.hero'));
+  })();
+</script>
+
+</body>
+</html>
