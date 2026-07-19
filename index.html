@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedLine Service | خدمات مجازی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0c0c0c;
+            color: #e0e0e0;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* سایه‌های قرمز */
+        .glow {
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.25);
+        }
+
+        /* هدر */
+        .header {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+            background: rgba(12, 12, 12, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ff2a2a, #cc0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav a {
+            color: #aaa;
+            text-decoration: none;
+            margin-right: 2rem;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
+        }
+
+        .nav a:hover {
+            color: #ff4444;
+            border-bottom-color: #ff4444;
+        }
+
+        .nav a.active {
+            color: #fff;
+            border-bottom-color: #ff2a2a;
+        }
+
+        /* بنر اصلی */
+        .hero {
+            width: 100%;
+            max-width: 1300px;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 70vh;
+        }
+
+        .hero-content {
+            flex: 1 1 500px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(to left, #ffffff, #ff4d4d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin: 1.5rem 0 2.5rem;
+            max-width: 550px;
+            line-height: 1.8;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.9rem 2.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff1a1a, #b30000);
+            color: #fff;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 45px rgba(255, 0, 0, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #ff2a2a;
+            color: #fff;
+        }
+
+        .btn-outline:hover {
+            background: #ff2a2a;
+            color: #000;
+        }
+
+        .hero-visual {
+            flex: 1 1 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.8rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            border-bottom: 2px solid #ff1a1a;
+        }
+
+        .stat-item .number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ff4444;
+        }
+
+        .stat-item .label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* کارت‌های خدمات */
+        .services-section {
+            width: 100%;
+            max-width: 1300px;
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 0;
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(to left, #ff2a2a, transparent);
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2rem 1.5rem;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 0, 0, 0.08);
+            transition: 0.3s;
+            backdrop-filter: blur(4px);
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            border-color: #ff2a2a;
+            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.08);
+        }
+
+        .service-card .icon {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .service-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.7rem;
+            color: #fff;
+        }
+
+        .service-card p {
+            color: #aaa;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* فوتر */
+        .footer {
+            width: 100%;
+            max-width: 1300px;
+            padding: 2rem;
+            border-top: 1px solid rgba(255, 0, 0, 0.1);
+            margin-top: 3rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .footer span a {
+            color: #ff4444;
+            text-decoration: none;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 800px) {
+            .hero {
+                flex-direction: column-reverse;
+                text-align: center;
+                padding: 2rem 1rem;
+            }
+
+            .hero-content p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .btn-group {
+                justify-content: center;
+            }
+
+            .nav a {
+                margin-right: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+
+            .header {
+                flex-wrap: wrap;
+                gap: 0.8rem;
+                justify-content: center;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+                padding: 1rem;
+            }
+
+            .stat-item .number {
+                font-size: 1.6rem;
+            }
+        }
+
+        /* خط قرمز تزیینی */
+        .red-line {
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(to left, #ff2a2a, transparent);
+            margin: 1rem 0 2rem;
+            border-radius: 10px;
+        }
+    </style>
+    <!-- فونت اینتر -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">⏺ REDLINE</div>
+        <nav class="nav">
+            <a href="#" class="active">خانه</a>
+            <a href="#">خدمات</a>
+            <a href="#">نمونه‌کار</a>
+            <a href="#">تماس</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>خدمات مجازی <br>با خط قرمز</h1>
+            <div class="red-line"></div>
+            <p>
+                RedLine Service — پلتفرمی برای ارائه خدمات دیجیتال با کیفیت بالا، امنیت پیشرفته و پشتیبانی ۲۴/۷.
+                ما خط قرمز خود را برای شما روشن می‌کنیم.
+            </p>
+            <div class="btn-group">
+                <a href="#" class="btn btn-primary">شروع کنید</a>
+                <a href="#" class="btn btn-outline">مشاهده خدمات</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-grid">
+                <div class="stat-item">
+                    <div class="number">۴.۹</div>
+                    <div class="label">میانگین امتیاز</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">۱۲۰+</div>
+                    <div class="label">پروژه فعال</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">۹۸٪</div>
+                    <div class="label">رضایت مشتری</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">۲۴/۷</div>
+                    <div class="label">پشتیبانی</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-section">
+        <h2 class="section-title glow">خدمات ما</h2>
+        <div class="service-grid">
+            <div class="service-card">
+                <span class="icon">🖥️</span>
+                <h3>توسعه وب</h3>
+                <p>طراحی و پیاده‌سازی وب‌سایت‌های مدرن، واکنش‌گرا و بهینه برای موتورهای جستجو.</p>
+            </div>
+            <div class="service-card">
+                <span class="icon">📱</span>
+                <h3>اپلیکیشن موبایل</h3>
+                <p>توسعه اپلیکیشن‌های اندروید و iOS با تجربه کاربری روان و قدرتمند.</p>
+            </div>
+            <div class="service-card">
+                <span class="icon">☁️</span>
+                <h3>زیرساخت ابری</h3>
+                <p>مدیریت سرور، دپلوی خودکار، مقیاس‌پذیری و امنیت سطح بالا.</p>
+            </div>
+            <div class="service-card">
+                <span class="icon">🤖</span>
+                <h3>هوش مصنوعی</h3>
+                <p>پیاده‌سازی راهکارهای هوشمند، پردازش داده و اتوماسیون با AI.</p>
+            </div>
+            <div class="service-card">
+                <span class="icon">🔒</span>
+                <h3>امنیت سایبری</h3>
+                <p>ارزیابی آسیب‌پذیری، تست نفوذ و پیاده‌سازی پروتکل‌های امنیتی.</p>
+            </div>
+            <div class="service-card">
+                <span class="icon">📊</span>
+                <h3>تحلیل داده</h3>
+                <p>داشبوردهای تعاملی، گزارش‌های پیشرفته و بینش از داده‌های شما.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div>© ۲۰۲۶ RedLine Service — همه حقوق محفوظ است.</div>
+        <div><span>ساخته شده با ❤️ و خط قرمز</span></div>
+        <div>
+            <a href="#">درباره ما</a> &nbsp;|&nbsp; <a href="#">حریم خصوصی</a>
+        </div>
+    </footer>
+
+    <!-- اسکریپت ساده برای تعامل (شبیه به سایت اصلی) -->
+    <script>
+        // فقط برای نمایش پویایی ساده
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                // افکت کوچک
+                this.style.transition = '0.2s';
+            });
+        });
+
+        // تغییر رنگ تصادفی خط قرمز (فان)
+        const redLine = document.querySelector('.red-line');
+        if (redLine) {
+            setInterval(() => {
+                const hue = Math.floor(Math.random() * 20) + 340; // قرمز طیف
+                redLine.style.background = `linear-gradient(to left, hsl(${hue}, 100%, 50%), transparent)`;
+            }, 3000);
+        }
+    </script>
+
+</body>
+</html>
