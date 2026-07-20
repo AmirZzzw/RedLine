@@ -22,26 +22,141 @@
 
   *{margin:0;padding:0;box-sizing:border-box;}
 
-  html{scroll-behavior:smooth;}
+  /* ========== LOADING SCREEN ========== */
+  #loadingScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+  }
+  #loadingScreen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .loader-logo {
+    font-family: 'Geist', sans-serif;
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--ink);
+  }
+  .loader-logo .dot { color: var(--red); }
+  .loader-bar-wrap {
+    width: min(280px, 70vw);
+    height: 4px;
+    background: var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .loader-bar {
+    height: 100%;
+    background: var(--red);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  .loader-percent {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
 
+  /* ========== RATING MODAL ========== */
+  .rating-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(28,23,18,.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .rating-modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .rating-modal {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    width: min(420px, 100%);
+    padding: 2.2rem;
+    text-align: center;
+    transform: translateY(12px);
+    transition: transform 0.3s ease;
+  }
+  .rating-modal-overlay.open .rating-modal {
+    transform: translateY(0);
+  }
+  .rating-modal h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+  }
+  .rating-stars-interactive {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    direction: ltr;
+  }
+  .rating-stars-interactive button {
+    background: none;
+    border: none;
+    font-size: 2.2rem;
+    color: var(--line);
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 0.2rem;
+  }
+  .rating-stars-interactive button:hover,
+  .rating-stars-interactive button.active {
+    color: var(--red);
+    transform: scale(1.15);
+  }
+  .rating-modal textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: var(--cream-panel);
+    color: var(--ink);
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 1rem;
+  }
+  .rating-modal .btn {
+    width: 100%;
+  }
+
+  /* Rest of styles remain same as original */
+  html{scroll-behavior:smooth;}
   body{
     background:var(--cream);
     color:var(--ink);
     font-family:'Vazirmatn','Geist',sans-serif;
     overflow-x:hidden;
   }
-
   h1,h2,h3{font-family:'Vazirmatn',sans-serif;font-weight:800;letter-spacing:-0.01em;}
   .lat{font-family:'Geist',sans-serif;}
   .mono{font-family:'Geist Mono',monospace;direction:ltr;unicode-bidi:isolate;}
-
   a{color:inherit;text-decoration:none;}
   ::selection{background:var(--red);color:var(--cream);}
   :focus-visible{outline:2px solid var(--red);outline-offset:3px;}
-
   button{font-family:inherit;cursor:pointer;}
 
-  /* ---------- Header ---------- */
   header{
     position:sticky;top:0;z-index:80;
     display:flex;align-items:center;justify-content:space-between;
@@ -57,11 +172,9 @@
   nav.links a:hover,nav.links a:focus-visible{color:var(--ink);}
   nav.links a::after{content:"";position:absolute;right:0;bottom:-4px;width:0;height:2px;background:var(--red);transition:width .25s ease;}
   nav.links a:hover::after,nav.links a:focus-visible::after{width:100%;}
-
   .header-actions{display:flex;align-items:center;gap:.7rem;}
   .icon-btn{
-    position:relative;
-    background:none;border:1px solid var(--line);
+    position:relative;background:none;border:1px solid var(--line);
     width:2.5rem;height:2.5rem;border-radius:999px;
     display:flex;align-items:center;justify-content:center;
     transition:border-color .25s ease,background .25s ease;
@@ -85,9 +198,7 @@
   .btn.primary{background:var(--red);border-color:var(--red);color:var(--cream);}
   .btn.primary:hover,.btn.primary:focus-visible{background:var(--red-deep);border-color:var(--red-deep);}
   .btn.block{width:100%;text-align:center;}
-  .menu-toggle{display:none;}
 
-  /* ---------- Hero ---------- */
   .hero{
     display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;
     align-items:center;
@@ -103,7 +214,6 @@
   .hero h1 span{color:var(--red);}
   .hero p{margin-top:1.4rem;max-width:42ch;color:var(--ink-soft);font-size:1rem;line-height:1.9;}
   .hero .actions{margin-top:2.2rem;display:flex;gap:1rem;flex-wrap:wrap;}
-
   .gauge-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;}
   .gauge{width:min(320px,80vw);height:min(320px,80vw);position:relative;}
   .gauge svg{width:100%;height:100%;overflow:visible;}
@@ -121,7 +231,6 @@
   .section-head h2{font-size:clamp(1.9rem,4vw,2.8rem);max-width:16ch;}
   .section-head p{max-width:36ch;color:var(--ink-soft);font-size:.92rem;line-height:1.8;}
 
-  /* ---------- Stars ---------- */
   .stars{position:relative;display:inline-block;font-size:.95rem;letter-spacing:2px;line-height:1;}
   .stars .back{color:var(--line);}
   .stars .front{
@@ -132,7 +241,6 @@
   .rating-row .count{font-size:.78rem;color:var(--ink-soft);}
   .rating-row .num{font-family:'Geist Mono',monospace;font-size:.82rem;font-weight:600;}
 
-  /* ---------- Products ---------- */
   .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;}
   .card{
     background:var(--cream-panel);
@@ -157,10 +265,24 @@
     transition:background .25s ease;
   }
   .card .add:hover{background:var(--red);}
+  .rate-btn {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    color: var(--ink-soft);
+    transition: all 0.2s ease;
+  }
+  .rate-btn:hover {
+    border-color: var(--red);
+    color: var(--red);
+  }
   @media (max-width:980px){ .product-grid{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:640px){ .product-grid{grid-template-columns:1fr;} }
 
-  /* ---------- Reviews ---------- */
   .review-strip{
     background:var(--ink);color:var(--cream);
     border-radius:24px;
@@ -176,7 +298,6 @@
   .review-card .who{margin-top:1.2rem;font-size:.8rem;color:#b9ae98;font-weight:600;}
   @media (max-width:900px){ .review-grid{grid-template-columns:1fr;} }
 
-  /* ---------- Loyalty band ---------- */
   .loyalty{
     display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;
     background:var(--cream-panel-2);border:1px solid var(--line);border-radius:24px;
@@ -204,7 +325,6 @@
   footer .socials a{transition:color .25s ease;}
   footer .socials a:hover,footer .socials a:focus-visible{color:var(--red);}
 
-  /* ---------- Modal (auth) ---------- */
   .modal-overlay{
     position:fixed;inset:0;z-index:200;
     background:rgba(28,23,18,.55);
@@ -247,7 +367,6 @@
   @media (max-width:780px){
     nav.links,.header-actions .btn.ghost{display:none;}
   }
-
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
     *{transition:none !important;animation:none !important;}
@@ -255,6 +374,33 @@
 </style>
 </head>
 <body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <div class="loader-logo"><span class="lat">RedLine</span><span class="dot">.</span></div>
+  <div class="loader-bar-wrap">
+    <div class="loader-bar" id="loaderBar"></div>
+  </div>
+  <div class="loader-percent mono" id="loaderPercent">0%</div>
+</div>
+
+<!-- RATING MODAL -->
+<div class="rating-modal-overlay" id="ratingOverlay">
+  <div class="rating-modal">
+    <button class="close" data-close-rating aria-label="بستن" style="position:absolute;top:1rem;left:1rem;">✕</button>
+    <h3 id="ratingProductName">امتیازدهی به محصول</h3>
+    <div class="rating-stars-interactive" id="ratingStars">
+      <button data-star="1">★</button>
+      <button data-star="2">★</button>
+      <button data-star="3">★</button>
+      <button data-star="4">★</button>
+      <button data-star="5">★</button>
+    </div>
+    <textarea id="ratingComment" placeholder="نظر خود را بنویسید (اختیاری)..."></textarea>
+    <button class="btn primary block" id="submitRating">ثبت امتیاز</button>
+    <div style="margin-top:0.8rem;font-size:0.8rem;color:var(--ink-soft);" id="ratingMsg"></div>
+  </div>
+</div>
 
 <header>
   <div class="logo"><span class="lat">RedLine</span><span class="dot">.</span></div>
@@ -268,11 +414,14 @@
     <button class="icon-btn" id="cartBtn" aria-label="سبد خرید">
       🛒<span class="badge mono" id="cartCount">0</span>
     </button>
-    <button class="btn ghost" data-open="login">ورود</button>
-    <button class="btn primary" data-open="signup">ثبت‌نام</button>
+    <span id="userDisplay" style="display:none;font-size:0.85rem;font-weight:600;margin-right:0.5rem;"></span>
+    <button class="btn ghost" id="btnLogin" data-open="login">ورود</button>
+    <button class="btn primary" id="btnSignup" data-open="signup">ثبت‌نام</button>
+    <button class="btn ghost" id="btnLogout" style="display:none;">خروج</button>
   </div>
 </header>
 
+<!-- Rest of the HTML remains the same as original, just add rate-btn to cards -->
 <section class="hero">
   <div>
     <div class="eyebrow">redlineservice.netlify.app</div>
@@ -308,92 +457,8 @@
     <p>هر پکیج شامل تحویل مشخص، بازخورد نامحدود در بازه‌ی توافق‌شده و گزارش نهایی هست.</p>
   </div>
 
-  <div class="product-grid">
-
-    <div class="card">
-      <div class="tag-num mono">SRV / 01</div>
-      <h3>طراحی وب‌سایت اختصاصی</h3>
-      <p>طراحی و توسعه‌ی وب‌سایت واکنش‌گرا، از صفر تا تحویل نهایی با کد تمیز.</p>
-      <div class="rating-row">
-        <span class="stars" data-rating="4.8"><span class="back">★★★★★</span><span class="front" style="width:96%">★★★★★</span></span>
-        <span class="num mono">4.8</span><span class="count">(212 نظر)</span>
-      </div>
-      <div class="foot">
-        <div class="price mono">۴,۹۰۰,۰۰۰<small> تومان</small></div>
-        <button class="add" data-add aria-label="افزودن به سبد">+</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="tag-num mono">SRV / 02</div>
-      <h3>بهینه‌سازی سئو (SEO)</h3>
-      <p>افزایش رتبه در نتایج جستجو با تحلیل کلمات کلیدی، سئوی فنی و محتوایی.</p>
-      <div class="rating-row">
-        <span class="stars" data-rating="4.6"><span class="back">★★★★★</span><span class="front" style="width:92%">★★★★★</span></span>
-        <span class="num mono">4.6</span><span class="count">(158 نظر)</span>
-      </div>
-      <div class="foot">
-        <div class="price mono">۲,۳۰۰,۰۰۰<small> تومان</small></div>
-        <button class="add" data-add aria-label="افزودن به سبد">+</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="tag-num mono">SRV / 03</div>
-      <h3>مدیریت شبکه‌های اجتماعی</h3>
-      <p>برنامه‌ریزی محتوا، طراحی پست و تحلیل ماهانه‌ی عملکرد صفحات شما.</p>
-      <div class="rating-row">
-        <span class="stars" data-rating="4.5"><span class="back">★★★★★</span><span class="front" style="width:90%">★★★★★</span></span>
-        <span class="num mono">4.5</span><span class="count">(301 نظر)</span>
-      </div>
-      <div class="foot">
-        <div class="price mono">۱,۸۵۰,۰۰۰<small> تومان / ماه</small></div>
-        <button class="add" data-add aria-label="افزودن به سبد">+</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="tag-num mono">SRV / 04</div>
-      <h3>طراحی هویت بصری برند</h3>
-      <p>لوگو، پالت رنگی، تایپوگرافی و راهنمای برند آماده برای استفاده در همه‌جا.</p>
-      <div class="rating-row">
-        <span class="stars" data-rating="4.9"><span class="back">★★★★★</span><span class="front" style="width:98%">★★★★★</span></span>
-        <span class="num mono">4.9</span><span class="count">(97 نظر)</span>
-      </div>
-      <div class="foot">
-        <div class="price mono">۳,۶۰۰,۰۰۰<small> تومان</small></div>
-        <button class="add" data-add aria-label="افزودن به سبد">+</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="tag-num mono">SRV / 05</div>
-      <h3>تولید محتوا و کپی‌رایتینگ</h3>
-      <p>متن سایت، پست شبکه‌های اجتماعی و کمپین‌های تبلیغاتی با لحن برند شما.</p>
-      <div class="rating-row">
-        <span class="stars" data-rating="4.4"><span class="back">★★★★★</span><span class="front" style="width:88%">★★★★★</span></span>
-        <span class="num mono">4.4</span><span class="count">(84 نظر)</span>
-      </div>
-      <div class="foot">
-        <div class="price mono">۱,۲۰۰,۰۰۰<small> تومان</small></div>
-        <button class="add" data-add aria-label="افزودن به سبد">+</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="tag-num mono">SRV / 06</div>
-      <h3>میزبانی و پشتیبانی فنی</h3>
-      <p>هاست پرسرعت، مانیتورینگ ۲۴ ساعته و پشتیبانی فنی برای وب‌سایت شما.</p>
-      <div class="rating-row">
-        <span class="stars" data-rating="4.7"><span class="back">★★★★★</span><span class="front" style="width:94%">★★★★★</span></span>
-        <span class="num mono">4.7</span><span class="count">(176 نظر)</span>
-      </div>
-      <div class="foot">
-        <div class="price mono">۹۵۰,۰۰۰<small> تومان / ماه</small></div>
-        <button class="add" data-add aria-label="افزودن به سبد">+</button>
-      </div>
-    </div>
-
+  <div class="product-grid" id="productGrid">
+    <!-- Products will be loaded dynamically from API -->
   </div>
 </section>
 
@@ -406,22 +471,8 @@
       </div>
       <p>بخشی از بازخوردهایی که بعد از تحویل پروژه از مشتری‌ها گرفتیم.</p>
     </div>
-    <div class="review-grid">
-      <div class="review-card">
-        <span class="stars"><span class="back">★★★★★</span><span class="front" style="width:100%">★★★★★</span></span>
-        <q>تحویل سر وقت بود و هر تغییری خواستیم بدون غر زدن انجام دادن.</q>
-        <div class="who">صاحب یک فروشگاه اینترنتی</div>
-      </div>
-      <div class="review-card">
-        <span class="stars"><span class="back">★★★★★</span><span class="front" style="width:92%">★★★★★</span></span>
-        <q>رتبه‌ی سایتمون توی گوگل بعد از دو ماه محسوس بالا رفت.</q>
-        <div class="who">مدیر یک استارتاپ کوچک</div>
-      </div>
-      <div class="review-card">
-        <span class="stars"><span class="back">★★★★★</span><span class="front" style="width:96%">★★★★★</span></span>
-        <q>هویت بصری‌ای که ساختن دقیقاً همون چیزی بود که تو ذهنمون بود.</q>
-        <div class="who">بنیان‌گذار یک برند لباس</div>
-      </div>
+    <div class="review-grid" id="reviewGrid">
+      <!-- Reviews loaded dynamically -->
     </div>
   </div>
 </section>
@@ -432,6 +483,12 @@
       <div class="tag" style="font-size:.78rem;font-weight:700;color:var(--red-deep);letter-spacing:.08em;margin-bottom:.6rem;">سیستم امتیازدهی</div>
       <h2>با هر سفارش، امتیاز جمع کن.</h2>
       <p>به ازای هر سفارش، امتیاز می‌گیری و با رسیدن به هر سطح، تخفیف و اولویت پشتیبانی باز می‌شه.</p>
+      <div id="userPoints" style="margin-top:1rem;display:none;">
+        <span style="font-weight:700;">امتیاز شما: </span>
+        <span class="mono" id="pointsValue" style="color:var(--red);">0</span>
+        <span> | سطح: </span>
+        <span id="pointsTier" style="font-weight:700;">برنز 🥉</span>
+      </div>
     </div>
     <div class="tiers">
       <div class="tier"><span class="name">🥉 سطح برنز</span><span class="pts mono">۰ – ۵۰۰ امتیاز</span></div>
@@ -456,7 +513,7 @@
     <button class="close" data-close aria-label="بستن">✕</button>
     <h3>ورود به حساب</h3>
     <div class="hint">وارد شو تا سفارش‌ها و امتیازهات رو ببینی.</div>
-    <form data-demo-form>
+    <form id="loginForm">
       <div class="field"><label for="li-email">ایمیل</label><input id="li-email" type="email" required placeholder="you@example.com"></div>
       <div class="field"><label for="li-pass">رمز عبور</label><input id="li-pass" type="password" required placeholder="••••••••"></div>
       <button class="btn primary block" type="submit">ورود</button>
@@ -470,7 +527,7 @@
     <button class="close" data-close aria-label="بستن">✕</button>
     <h3>ساخت حساب</h3>
     <div class="hint">ثبت‌نام کن و ۱۰۰ امتیاز خوش‌آمدگویی بگیر.</div>
-    <form data-demo-form>
+    <form id="signupForm">
       <div class="field"><label for="su-name">نام</label><input id="su-name" type="text" required placeholder="نام و نام خانوادگی"></div>
       <div class="field"><label for="su-email">ایمیل</label><input id="su-email" type="email" required placeholder="you@example.com"></div>
       <div class="field"><label for="su-pass">رمز عبور</label><input id="su-pass" type="password" required placeholder="••••••••"></div>
@@ -481,81 +538,321 @@
 </div>
 
 <script>
-  // Gauge sweep
+  // ========== CONFIG ==========
+  const API_BASE = 'https://redline-api.YOUR-SUBDOMAIN.workers.dev'; // Change this to your Worker URL
+  const PRODUCTS = [
+    { id: 'srv-01', name: 'طراحی وب‌سایت اختصاصی', desc: 'طراحی و توسعه‌ی وب‌سایت واکنش‌گرا، از صفر تا تحویل نهایی با کد تمیز.', price: 4900000, rating: 4.8, reviews: 212 },
+    { id: 'srv-02', name: 'بهینه‌سازی سئو (SEO)', desc: 'افزایش رتبه در نتایج جستجو با تحلیل کلمات کلیدی، سئوی فنی و محتوایی.', price: 2300000, rating: 4.6, reviews: 158 },
+    { id: 'srv-03', name: 'مدیریت شبکه‌های اجتماعی', desc: 'برنامه‌ریزی محتوا، طراحی پست و تحلیل ماهانه‌ی عملکرد صفحات شما.', price: 1850000, rating: 4.5, reviews: 301, monthly: true },
+    { id: 'srv-04', name: 'طراحی هویت بصری برند', desc: 'لوگو، پالت رنگی، تایپوگرافی و راهنمای برند آماده برای استفاده در همه‌جا.', price: 3600000, rating: 4.9, reviews: 97 },
+    { id: 'srv-05', name: 'تولید محتوا و کپی‌رایتینگ', desc: 'متن سایت، پست شبکه‌های اجتماعی و کمپین‌های تبلیغاتی با لحن برند شما.', price: 1200000, rating: 4.4, reviews: 84 },
+    { id: 'srv-06', name: 'میزبانی و پشتیبانی فنی', desc: 'هاست پرسرعت، مانیتورینگ ۲۴ ساعته و پشتیبانی فنی برای وب‌سایت شما.', price: 950000, rating: 4.7, reviews: 176, monthly: true }
+  ];
+
+  // ========== LOADING SCREEN ==========
+  (function() {
+    const loaderBar = document.getElementById('loaderBar');
+    const loaderPercent = document.getElementById('loaderPercent');
+    const loadingScreen = document.getElementById('loadingScreen');
+    let progress = 0;
+    
+    const interval = setInterval(() => {
+      progress += Math.random() * 15 + 2;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        loaderBar.style.width = '100%';
+        loaderPercent.textContent = '100%';
+        setTimeout(() => {
+          loadingScreen.classList.add('hidden');
+        }, 400);
+      } else {
+        loaderBar.style.width = progress + '%';
+        loaderPercent.textContent = Math.floor(progress) + '%';
+      }
+    }, 200);
+  })();
+
+  // ========== API HELPERS ==========
+  async function apiCall(endpoint, method = 'GET', body = null) {
+    const token = localStorage.getItem('redline_token');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    
+    const opts = { method, headers };
+    if (body) opts.body = JSON.stringify(body);
+    
+    const res = await fetch(`${API_BASE}${endpoint}`, opts);
+    return res.json();
+  }
+
+  // ========== AUTH ==========
+  function updateAuthUI() {
+    const token = localStorage.getItem('redline_token');
+    const user = JSON.parse(localStorage.getItem('redline_user') || 'null');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnSignup = document.getElementById('btnSignup');
+    const btnLogout = document.getElementById('btnLogout');
+    const userDisplay = document.getElementById('userDisplay');
+    const userPoints = document.getElementById('userPoints');
+    
+    if (token && user) {
+      btnLogin.style.display = 'none';
+      btnSignup.style.display = 'none';
+      btnLogout.style.display = '';
+      userDisplay.style.display = '';
+      userDisplay.textContent = `👤 ${user.name}`;
+      if (userPoints) {
+        userPoints.style.display = '';
+        document.getElementById('pointsValue').textContent = user.points || 0;
+        updateTier(user.points || 0);
+      }
+    } else {
+      btnLogin.style.display = '';
+      btnSignup.style.display = '';
+      btnLogout.style.display = 'none';
+      userDisplay.style.display = 'none';
+      if (userPoints) userPoints.style.display = 'none';
+    }
+  }
+
+  function updateTier(points) {
+    const tierEl = document.getElementById('pointsTier');
+    if (points >= 1500) tierEl.textContent = 'طلا 🥇';
+    else if (points >= 500) tierEl.textContent = 'نقره 🥈';
+    else tierEl.textContent = 'برنز 🥉';
+  }
+
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('su-name').value;
+    const email = document.getElementById('su-email').value;
+    const password = document.getElementById('su-pass').value;
+    
+    try {
+      const data = await apiCall('/api/auth/signup', 'POST', { name, email, password });
+      if (data.success) {
+        localStorage.setItem('redline_token', data.token);
+        localStorage.setItem('redline_user', JSON.stringify(data.user));
+        updateAuthUI();
+        document.getElementById('signupOverlay').classList.remove('open');
+        alert('ثبت‌نام موفق! ۱۰۰ امتیاز خوش‌آمدگویی دریافت کردید.');
+        loadProducts();
+      } else {
+        alert(data.error || 'خطا در ثبت‌نام');
+      }
+    } catch (err) {
+      alert('خطا در اتصال به سرور');
+    }
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('li-email').value;
+    const password = document.getElementById('li-pass').value;
+    
+    try {
+      const data = await apiCall('/api/auth/login', 'POST', { email, password });
+      if (data.success) {
+        localStorage.setItem('redline_token', data.token);
+        localStorage.setItem('redline_user', JSON.stringify(data.user));
+        updateAuthUI();
+        document.getElementById('loginOverlay').classList.remove('open');
+        loadProducts();
+      } else {
+        alert(data.error || 'خطا در ورود');
+      }
+    } catch (err) {
+      alert('خطا در اتصال به سرور');
+    }
+  });
+
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    localStorage.removeItem('redline_token');
+    localStorage.removeItem('redline_user');
+    updateAuthUI();
+    loadProducts();
+  });
+
+  // ========== RATING SYSTEM ==========
+  let currentRatingProduct = null;
+  let selectedRating = 0;
+
+  document.getElementById('ratingStars').addEventListener('click', (e) => {
+    if (e.target.dataset.star) {
+      selectedRating = parseInt(e.target.dataset.star);
+      document.querySelectorAll('#ratingStars button').forEach((btn, i) => {
+        btn.classList.toggle('active', i < selectedRating);
+      });
+    }
+  });
+
+  document.getElementById('submitRating').addEventListener('click', async () => {
+    const token = localStorage.getItem('redline_token');
+    if (!token) {
+      alert('لطفاً ابتدا وارد حساب خود شوید.');
+      return;
+    }
+    if (!selectedRating || !currentRatingProduct) {
+      document.getElementById('ratingMsg').textContent = 'لطفاً امتیاز را انتخاب کنید.';
+      return;
+    }
+    
+    const comment = document.getElementById('ratingComment').value;
+    try {
+      const data = await apiCall('/api/ratings', 'POST', {
+        productId: currentRatingProduct,
+        rating: selectedRating,
+        comment
+      });
+      if (data.success) {
+        document.getElementById('ratingMsg').textContent = '✅ امتیاز شما ثبت شد!';
+        setTimeout(() => {
+          document.getElementById('ratingOverlay').classList.remove('open');
+          document.getElementById('ratingMsg').textContent = '';
+          document.getElementById('ratingComment').value = '';
+          selectedRating = 0;
+          document.querySelectorAll('#ratingStars button').forEach(b => b.classList.remove('active'));
+          loadProducts();
+          loadReviews();
+        }, 1500);
+      }
+    } catch (err) {
+      document.getElementById('ratingMsg').textContent = '❌ خطا در ثبت امتیاز';
+    }
+  });
+
+  document.querySelector('[data-close-rating]').addEventListener('click', () => {
+    document.getElementById('ratingOverlay').classList.remove('open');
+  });
+
+  function openRating(productId, productName) {
+    currentRatingProduct = productId;
+    document.getElementById('ratingProductName').textContent = `امتیازدهی به: ${productName}`;
+    document.getElementById('ratingOverlay').classList.add('open');
+  }
+
+  // ========== LOAD PRODUCTS ==========
+  function loadProducts() {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = PRODUCTS.map((p, i) => `
+      <div class="card">
+        <div class="tag-num mono">SRV / ${String(i+1).padStart(2,'0')}</div>
+        <h3>${p.name}</h3>
+        <p>${p.desc}</p>
+        <div class="rating-row">
+          <span class="stars" data-rating="${p.rating}"><span class="back">★★★★★</span><span class="front" style="width:${p.rating*20}%">★★★★★</span></span>
+          <span class="num mono">${p.rating}</span><span class="count">(${p.reviews} نظر)</span>
+        </div>
+        <div class="foot">
+          <div class="price mono">${p.price.toLocaleString()}<small> تومان${p.monthly ? ' / ماه' : ''}</small></div>
+          <button class="add" data-add aria-label="افزودن به سبد">+</button>
+        </div>
+        <button class="rate-btn" onclick="openRating('${p.id}', '${p.name}')">⭐ امتیاز دادن</button>
+      </div>
+    `).join('');
+    
+    // Re-attach cart listeners
+    attachCartListeners();
+  }
+
+  function loadReviews() {
+    const grid = document.getElementById('reviewGrid');
+    // Load from API or use defaults
+    apiCall('/api/ratings/latest').then(data => {
+      if (data.success && data.reviews.length > 0) {
+        grid.innerHTML = data.reviews.map(r => `
+          <div class="review-card">
+            <span class="stars"><span class="back">★★★★★</span><span class="front" style="width:${r.rating*20}%">★★★★★</span></span>
+            <q>${r.comment || 'بدون متن'}</q>
+            <div class="who">${r.userName || 'کاربر'}</div>
+          </div>
+        `).join('');
+      }
+    }).catch(() => {
+      // Default reviews
+      grid.innerHTML = [
+        { rating: 5, comment: 'تحویل سر وقت بود و هر تغییری خواستیم بدون غر زدن انجام دادن.', who: 'صاحب یک فروشگاه اینترنتی' },
+        { rating: 4.6, comment: 'رتبه‌ی سایتمون توی گوگل بعد از دو ماه محسوس بالا رفت.', who: 'مدیر یک استارتاپ کوچک' },
+        { rating: 4.8, comment: 'هویت بصری‌ای که ساختن دقیقاً همون چیزی بود که تو ذهنمون بود.', who: 'بنیان‌گذار یک برند لباس' }
+      ].map(r => `
+        <div class="review-card">
+          <span class="stars"><span class="back">★★★★★</span><span class="front" style="width:${r.rating*20}%">★★★★★</span></span>
+          <q>${r.comment}</q>
+          <div class="who">${r.who}</div>
+        </div>
+      `).join('');
+    });
+  }
+
+  // ========== CART ==========
+  let cartCount = 0;
+  function attachCartListeners() {
+    document.querySelectorAll('[data-add]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        cartCount++;
+        document.getElementById('cartCount').textContent = cartCount;
+        btn.style.background = 'var(--red)';
+        setTimeout(() => { btn.style.background = ''; }, 300);
+      });
+    });
+  }
+
+  // ========== GAUGE ==========
   (function(){
-    var circle = document.getElementById('gaugeProgress');
-    var num = document.getElementById('gaugeNum');
-    var circumference = 540;
-    var target = 4.7;
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const circle = document.getElementById('gaugeProgress');
+    const num = document.getElementById('gaugeNum');
+    const circumference = 540;
+    const target = 4.7;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function setValue(v){
-      var frac = v/5;
-      circle.style.strokeDashoffset = circumference - (frac*circumference*0.86);
+      circle.style.strokeDashoffset = circumference - (v/5 * circumference * 0.86);
       num.textContent = v.toFixed(1);
     }
     if(reduce){ setValue(target); }
     else{
-      var animated = false;
+      let animated = false;
       function sweep(){
         if(animated) return; animated = true;
-        var v = 0;
-        var iv = setInterval(function(){
+        let v = 0;
+        const iv = setInterval(() => {
           v += 0.12;
           if(v >= target){ v = target; clearInterval(iv); }
           setValue(v);
         }, 25);
       }
-      var obs = new IntersectionObserver(function(entries){
-        entries.forEach(function(e){ if(e.isIntersecting) sweep(); });
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) sweep(); });
       }, {threshold:.4});
       obs.observe(document.querySelector('.hero'));
     }
   })();
 
-  // Cart counter (front-end only)
+  // ========== MODALS ==========
   (function(){
-    var count = 0;
-    var badge = document.getElementById('cartCount');
-    document.querySelectorAll('[data-add]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        count++; badge.textContent = count;
-        btn.style.background = 'var(--red)';
-        setTimeout(function(){ btn.style.background = ''; }, 300);
-      });
-    });
-  })();
-
-  // Auth modals
-  (function(){
-    var overlays = { login: document.getElementById('loginOverlay'), signup: document.getElementById('signupOverlay') };
-
+    const overlays = { login: document.getElementById('loginOverlay'), signup: document.getElementById('signupOverlay') };
     function open(name){
-      Object.values(overlays).forEach(function(o){ o.classList.remove('open'); });
+      Object.values(overlays).forEach(o => o.classList.remove('open'));
       overlays[name].classList.add('open');
     }
-    function closeAll(){ Object.values(overlays).forEach(function(o){ o.classList.remove('open'); }); }
-
-    document.querySelectorAll('[data-open]').forEach(function(btn){
-      btn.addEventListener('click', function(){ open(btn.getAttribute('data-open')); });
+    function closeAll(){ Object.values(overlays).forEach(o => o.classList.remove('open')); }
+    document.querySelectorAll('[data-open]').forEach(btn => {
+      btn.addEventListener('click', () => open(btn.getAttribute('data-open')));
     });
-    document.querySelectorAll('[data-close]').forEach(function(btn){
+    document.querySelectorAll('[data-close]').forEach(btn => {
       btn.addEventListener('click', closeAll);
     });
-    Object.values(overlays).forEach(function(o){
-      o.addEventListener('click', function(e){ if(e.target === o) closeAll(); });
+    Object.values(overlays).forEach(o => {
+      o.addEventListener('click', e => { if(e.target === o) closeAll(); });
     });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAll(); });
- 
-    document.querySelectorAll('[data-demo-form]').forEach(function(form){
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        closeAll();
-        form.reset();
-        alert('این بخش نمایشیه — بک‌اند واقعی رو بعداً وصل می‌کنی.');
-      });
-    });
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeAll(); });
   })();
+
+  // ========== INIT ==========
+  updateAuthUI();
+  loadProducts();
+  loadReviews();
 </script>
 
 </body>
