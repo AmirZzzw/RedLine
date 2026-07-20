@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پنل ادمین | RedLine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f5f2;
+      --card: #ffffff;
+      --text: #1e1a17;
+      --muted: #4f4640;
+      --light: #7a6e64;
+      --border: #e0d9cd;
+      --accent: #D42A1C;
+      --accent-hover: #8C1A10;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --sidebar-bg: #1e1a17;
+      --sidebar-text: #f0ebe5;
+      --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 100;
+    }
+    .sidebar .logo { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; margin-bottom: 2rem; }
+    .sidebar .logo span { color: #f87171; }
+    .sidebar nav { flex: 1; }
+    .sidebar nav a {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: #b5a89a;
+      text-decoration: none;
+      border-radius: 10px;
+      margin-bottom: 0.3rem;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    .sidebar nav a:hover, .sidebar nav a.active {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .sidebar .logout-btn {
+      background: rgba(239,68,68,0.15);
+      color: #fca5a5;
+      border: none;
+      padding: 0.7rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .sidebar .logout-btn:hover { background: rgba(239,68,68,0.3); }
+    
+    /* Main */
+    .main {
+      margin-right: 260px;
+      flex: 1;
+      padding: 2rem;
+    }
+    .main h1 { font-size: 1.8rem; margin-bottom: 1.5rem; }
+    
+    /* Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .stat-card .label { font-size: 0.8rem; color: var(--muted); }
+    .stat-card .value { font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    
+    /* Table */
+    .table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.8rem 1rem; text-align: right; font-size: 0.85rem; }
+    th { background: #faf8f5; font-weight: 700; color: var(--muted); }
+    tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-danger { background: #fef2f2; color: var(--error); }
+    .btn-danger:hover { background: #fee2e2; }
+    .btn-success { background: #ecfdf5; color: var(--success); }
+    .btn-success:hover { background: #d1fae5; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: var(--accent-hover); }
+    
+    .section { display: none; }
+    .section.active { display: block; }
+    
+    /* Login screen */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+    #loginScreen.hidden { display: none; }
+    .login-card {
+      background: var(--card);
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      width: 400px;
+      text-align: center;
+    }
+    .login-card h2 { margin-bottom: 1.5rem; }
+    .login-card input {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .login-card .btn { width: 100%; padding: 0.8rem; }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; flex-wrap: wrap; gap: 0.5rem; padding: 1rem; }
+      .main { margin-right: 0; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-card" id="loginStep1">
+    <h2>🔐 ورود ادمین</h2>
+    <input type="email" id="adminEmail" placeholder="ایمیل ادمین" value="admin@admin">
+    <input type="password" id="adminPassword" placeholder="رمز عبور">
+    <button class="btn btn-accent" onclick="adminLogin()">ورود</button>
+    <p id="loginMsg1" style="margin-top:1rem;color:var(--error);"></p>
+  </div>
+  <div class="login-card" id="loginStep2" style="display:none;">
+    <h2>🔢 کد تأیید</h2>
+    <p style="color:var(--muted);margin-bottom:1rem;">کد ۶ رقمی ارسال شده به تلگرام را وارد کنید</p>
+    <input type="text" id="twoFactorCode" placeholder="کد ۶ رقمی" maxlength="6">
+    <button class="btn btn-accent" onclick="verify2FA()">تأیید</button>
+    <p id="loginMsg2" style="margin-top:1rem;color:var(--error);"></p>
+  </div>
+</div>
+
+<div class="sidebar" id="sidebar" style="display:none;">
+  <div class="logo">RedLine<span>.</span> Admin</div>
+  <nav>
+    <a href="#" class="active" data-section="dashboard">📊 داشبورد</a>
+    <a href="#" data-section="users">👥 کاربران</a>
+    <a href="#" data-section="orders">📦 سفارشات</a>
+    <a href="#" data-section="ratings">⭐ امتیازات</a>
+    <a href="#" data-section="logs">📋 لاگ فعالیت</a>
+  </nav>
+  <button class="logout-btn" onclick="adminLogout()">🚪 خروج</button>
+</div>
+
+<div class="main" id="mainContent" style="display:none;">
+  <div class="section active" id="dashboard">
+    <h1>📊 داشبورد</h1>
+    <div class="stats-grid" id="statsGrid"></div>
+    <h2 style="margin-top:2rem;margin-bottom:1rem;">📦 سفارشات اخیر</h2>
+    <div class="table-wrap"><table id="recentOrders"><thead><tr><th>کد پیگیری</th><th>کاربر</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="section" id="users">
+    <h1>👥 مدیریت کاربران</h1>
+    <div class="table-wrap"><table id="usersTable"><thead><tr><th>نام</th><th>ایمیل</th><th>امتیاز</th><th>تاریخ عضویت</th><th>عملیات</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="section" id="orders">
+    <h1>📦 سفارشات</h1>
+    <div class="table-wrap"><table id="ordersTable"><thead><tr><th>کد</th><th>کاربر</th><th>مبلغ</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="section" id="ratings">
+    <h1>⭐ امتیازات</h1>
+    <div class="table-wrap"><table id="ratingsTable"><thead><tr><th>کاربر</th><th>محصول</th><th>امتیاز</th><th>نظر</th><th>عملیات</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="section" id="logs">
+    <h1>📋 لاگ فعالیت</h1>
+    <div class="table-wrap"><table id="logsTable"><thead><tr><th>ادمین</th><th>عملیات</th><th>جزئیات</th><th>IP</th><th>تاریخ</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<script>
+const API = 'https://redline.amirsidka.workers.dev';
+let adminToken = localStorage.getItem('admin_token');
+let currentAdminId = null;
+
+// Check if already logged in
+if (adminToken) {
+  verifyAdminToken();
+}
+
+async function verifyAdminToken() {
+  try {
+    const res = await fetch(`${API}/api/admin/dashboard`, {
+      headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    if (res.ok) {
+      showAdminPanel();
+    } else {
+      localStorage.removeItem('admin_token');
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+  } catch {
+    document.getElementById('loginScreen').classList.remove('hidden');
+  }
+}
+
+async function adminLogin() {
+  const email = document.getElementById('adminEmail').value;
+  const password = document.getElementById('adminPassword').value;
+  
+  try {
+    const res = await fetch(`${API}/api/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    
+    if (data.success && data.requires2FA) {
+      currentAdminId = data.adminId;
+      document.getElementById('loginStep1').style.display = 'none';
+      document.getElementById('loginStep2').style.display = 'block';
+      document.getElementById('loginMsg1').textContent = '';
+    } else {
+      document.getElementById('loginMsg1').textContent = data.error || 'خطا در ورود';
+    }
+  } catch {
+    document.getElementById('loginMsg1').textContent = 'خطا در اتصال';
+  }
+}
+
+async function verify2FA() {
+  const code = document.getElementById('twoFactorCode').value;
+  
+  try {
+    const res = await fetch(`${API}/api/admin/verify-2fa`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminId: currentAdminId, code })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      adminToken = data.token;
+      localStorage.setItem('admin_token', adminToken);
+      document.getElementById('loginScreen').classList.add('hidden');
+      showAdminPanel();
+    } else {
+      document.getElementById('loginMsg2').textContent = data.error || 'کد اشتباه';
+    }
+  } catch {
+    document.getElementById('loginMsg2').textContent = 'خطا در اتصال';
+  }
+}
+
+function showAdminPanel() {
+  document.getElementById('sidebar').style.display = 'flex';
+  document.getElementById('mainContent').style.display = 'block';
+  loadDashboard();
+}
+
+async function adminLogout() {
+  await fetch(`${API}/api/admin/logout`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${adminToken}` }
+  });
+  localStorage.removeItem('admin_token');
+  location.reload();
+}
+
+// Section navigation
+document.querySelectorAll('[data-section]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('[data-section]').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(link.dataset.section).classList.add('active');
+    
+    const section = link.dataset.section;
+    if (section === 'dashboard') loadDashboard();
+    else if (section === 'users') loadUsers();
+    else if (section === 'orders') loadOrders();
+    else if (section === 'ratings') loadRatings();
+    else if (section === 'logs') loadLogs();
+  });
+});
+
+async function apiCall(endpoint) {
+  const res = await fetch(`${API}${endpoint}`, {
+    headers: { 'Authorization': `Bearer ${adminToken}` }
+  });
+  return res.json();
+}
+
+async function loadDashboard() {
+  const data = await apiCall('/api/admin/dashboard');
+  if (data.success) {
+    document.getElementById('statsGrid').innerHTML = `
+      <div class="stat-card"><div class="label">👥 کاربران</div><div class="value">${data.stats.totalUsers}</div></div>
+      <div class="stat-card"><div class="label">📦 سفارشات</div><div class="value">${data.stats.totalOrders}</div></div>
+      <div class="stat-card"><div class="label">💰 درآمد (تومان)</div><div class="value">${Number(data.stats.totalRevenue).toLocaleString()}</div></div>
+      <div class="stat-card"><div class="label">⏳ در انتظار</div><div class="value">${data.stats.pendingOrders}</div></div>
+    `;
+    
+    const tbody = document.querySelector('#recentOrders tbody');
+    tbody.innerHTML = data.recentOrders.map(o => `
+      <tr>
+        <td style="font-family:monospace;">${o.tracking_code}</td>
+        <td>${o.user_name || 'ناشناس'}</td>
+        <td>${Number(o.total_amount).toLocaleString()}</td>
+        <td>${o.status === 'paid' ? '✅ پرداخت شده' : o.status === 'pending' ? '⏳ در انتظار' : o.status}</td>
+        <td>${new Date(o.created_at).toLocaleDateString('fa-IR')}</td>
+      </tr>
+    `).join('');
+  }
+}
+
+async function loadUsers() {
+  const data = await apiCall('/api/admin/users');
+  if (data.success) {
+    document.querySelector('#usersTable tbody').innerHTML = data.users.map(u => `
+      <tr>
+        <td>${u.name}</td>
+        <td>${u.email}</td>
+        <td>${u.points}</td>
+        <td>${new Date(u.created_at).toLocaleDateString('fa-IR')}</td>
+        <td>
+          <button class="btn btn-success" onclick="addPoints(${u.id})">+۱۰۰ امتیاز</button>
+          <button class="btn btn-danger" onclick="deleteUser(${u.id})">حذف</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+}
+
+async function addPoints(userId) {
+  await fetch(`${API}/api/admin/users/add-points`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+    body: JSON.stringify({ userId, points: 100 })
+  });
+  loadUsers();
+}
+
+async function deleteUser(userId) {
+  if (!confirm('مطمئنی می‌خوای این کاربر رو حذف کنی؟')) return;
+  await fetch(`${API}/api/admin/users/delete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+    body: JSON.stringify({ userId })
+  });
+  loadUsers();
+}
+
+async function loadOrders() {
+  const data = await apiCall('/api/admin/orders');
+  if (data.success) {
+    document.querySelector('#ordersTable tbody').innerHTML = data.orders.map(o => `
+      <tr>
+        <td style="font-family:monospace;">${o.tracking_code}</td>
+        <td>${o.user_name || 'ناشناس'}</td>
+        <td>${Number(o.total_amount).toLocaleString()}</td>
+        <td>${o.status}</td>
+        <td>
+          <select onchange="updateOrderStatus(${o.id}, this.value)" style="padding:0.3rem;border-radius:6px;border:1px solid #ddd;">
+            <option value="pending" ${o.status==='pending'?'selected':''}>در انتظار</option>
+            <option value="paid" ${o.status==='paid'?'selected':''}>پرداخت شده</option>
+            <option value="completed" ${o.status==='completed'?'selected':''}>تکمیل شده</option>
+            <option value="cancelled" ${o.status==='cancelled'?'selected':''}>لغو شده</option>
+          </select>
+        </td>
+      </tr>
+    `).join('');
+  }
+}
+
+async function updateOrderStatus(orderId, status) {
+  await fetch(`${API}/api/admin/orders/update-status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+    body: JSON.stringify({ orderId, status })
+  });
+}
+
+async function loadRatings() {
+  const data = await apiCall('/api/admin/ratings');
+  if (data.success) {
+    document.querySelector('#ratingsTable tbody').innerHTML = data.ratings.map(r => `
+      <tr>
+        <td>${r.user_name}</td>
+        <td>${r.product_id}</td>
+        <td>${'⭐'.repeat(r.rating)}</td>
+        <td>${r.comment || '-'}</td>
+        <td><button class="btn btn-danger" onclick="deleteRating(${r.id})">حذف</button></td>
+      </tr>
+    `).join('');
+  }
+}
+
+async function deleteRating(ratingId) {
+  if (!confirm('این امتیاز حذف بشه؟')) return;
+  await fetch(`${API}/api/admin/ratings/delete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+    body: JSON.stringify({ ratingId })
+  });
+  loadRatings();
+}
+
+async function loadLogs() {
+  const data = await apiCall('/api/admin/logs');
+  if (data.success) {
+    document.querySelector('#logsTable tbody').innerHTML = data.logs.map(l => `
+      <tr>
+        <td>${l.admin_name || 'سیستم'}</td>
+        <td>${l.action}</td>
+        <td>${l.details}</td>
+        <td style="font-family:monospace;font-size:0.75rem;">${l.ip}</td>
+        <td>${new Date(l.created_at).toLocaleString('fa-IR')}</td>
+      </tr>
+    `).join('');
+  }
+}
+</script>
+
+</body>
+</html>
